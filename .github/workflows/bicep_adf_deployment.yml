@@ -36,7 +36,7 @@ jobs:
     env:
       AzureConnection: ${{ secrets.AZURE_CONNECTION }}
       SubscriptionName: 'Azure subscription 1'
-      location: 'East US'
+      location: 'EastUS'
       resourceGroupName: 'RG01'
 
     steps:
