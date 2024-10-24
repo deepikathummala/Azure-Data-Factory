@@ -27,6 +27,6 @@ jobs:
         resourceGroupName: ${{secrets.AZURE_RG}}
         # Specify the path to the ADF ARM template. In this scenario, the workflow is in the same branch, 
         # hence we only add the folder and arm template name to the path
-        template: ././ARMTemplateForFactory.json
+        template: ./bicepRoot/main.bicep
         # Incremental (only add resources to resource group) or Complete (remove extra resources from resource group) or Validate (only validates the template).
         deploymentMode: Incremental
