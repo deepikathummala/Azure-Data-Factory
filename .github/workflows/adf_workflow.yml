@@ -22,7 +22,7 @@ jobs:
       uses: Azure/arm-deploy@v1.0.6
       with:
         # Provide the scope of the deployment. Valid values are: 'resourcegroup', 'managementgroup', 'subscription'
-        scope: 'resourcegroup'
+        scope: 'subscription'
         # Target resource group of the deployment.
         resourceGroupName: ${{secrets.AZURE_RG}}
         # Specify the path to the ADF ARM template. In this scenario, the workflow is in the same branch, 
