@@ -1,9 +1,34 @@
 name: Deploy Azure Resources
 
 on:
-  push:
-    branches:
-      - main
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment'
+        required: true
+        default: dev
+        type: choice
+        options:
+          - dev
+          - test
+          - uat
+          - preprod
+          - prod
+      deployrg:
+        description: 'Deploy Resource Group'
+        required: true
+        default: false
+        type: boolean
+      deployadf:
+        description: 'Deploy Data Factory Instance'
+        required: true
+        default: false
+        type: boolean
+      deploylaw:
+        description: 'Deploy Log Analytics Workspace'
+        required: true
+        default: false
+        type: boolean
 
 jobs:
   deploy:
@@ -13,7 +38,6 @@ jobs:
       SubscriptionName: 'Azure subscription 1'
       location: 'East US'
       resourceGroupName: 'RG01'
-      environment: 'dev'
 
     steps:
     - name: Checkout repository
@@ -25,21 +49,21 @@ jobs:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
 
     - name: Deploy Resource Group
-      if: ${{ github.event.inputs.deployrg == 'true' }}
+      if: ${{ github.event.inputs.deployrg }}
       run: |
         az deployment sub create \
           --name deployResourceGroup \
           --location ${{ env.location }} \
           --template-file bicepRoot/main.bicep \
-          --parameters @bicepParam/parameters.${{ env.environment }}.bicepparam \
+          --parameters @bicepParam/parameters.${{ github.event.inputs.environment }}.bicepparam \
           --parameters deployadf=${{ github.event.inputs.deployadf }} deployrg=${{ github.event.inputs.deployrg }}
 
     - name: Deploy Data Factory
-      if: ${{ github.event.inputs.deployadf == 'true' || github.event.inputs.deploylaw == 'true' }}
+      if: ${{ github.event.inputs.deployadf || github.event.inputs.deploylaw }}
       run: |
         az deployment group create \
           --name deployDataFactory \
           --resource-group ${{ env.resourceGroupName }} \
           --template-file bicepRoot/main.bicep \
-          --parameters @bicepParam/parameters.${{ env.environment }}.bicepparam \
+          --parameters @bicepParam/parameters.${{ github.event.inputs.environment }}.bicepparam \
           --parameters deployadf=${{ github.event.inputs.deployadf }} deployrg=${{ github.event.inputs.deployrg }} deploylaw=${{ github.event.inputs.deploylaw }}
